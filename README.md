@@ -232,6 +232,14 @@ Achieve that effortless off-duty model aesthetic with these classic Vintage Levi
 - **What I changed:** I implemented and tested each part of the workflow separately. I added an actionable error message for searches with no results, saved intermediate outputs in the session dictionary, and removed temporary debugging statements after verifying the workflow. I then tested the complete application using `python app.py ask` and confirmed that it generated an outfit recommendation and fit card.
 
 
+**Moment 3 — Unit 4: MCP Integration and Testing**
+
+- **What I asked for:** I asked ChatGPT to guide me through moving `search_listings()` from a direct Python function call to an MCP tool. I also requested help testing the agent's execution trace, running repeated evaluations, and identifying weaknesses in search relevance.
+- **What came back:** ChatGPT explained how to register `search_listings()` in `mcp_server.py`, call it through `mcp_client.py`, and verify the agent's workflow. It also helped me interpret the before-evaluation results and identify unrelated clothing items returned by keyword matching.
+- **What I changed:** I connected `agent.py` to the MCP tool and verified that the agent still completed its workflow. I then modified `tools.py` to require at least two keyword matches for multiword searches. I ran the after-evaluation, compared the results, and documented the remaining limitations. I also verified that search results respected the maximum price across five budget tests.
+
+
+
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
      Don't fill these in during unit 3.
