@@ -25,9 +25,7 @@ Given a query that matches at least one listing, the agent completes all three
 tool calls and returns a fit card — in at least 4 of 5 tries.
 
 **Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
+The 4-of-5 target allows for occasional failures because the search uses keyword matching, which may not recognize every description of an item. Model calls may also fail occasionally. Requiring 5 of 5 successful attempts would be stricter than necessary for this initial implementation.
 
 ---
 
@@ -37,64 +35,40 @@ Given a query that matches no listings, the agent stops before calling
 `suggest_outfit` and returns a message naming what to change — 5 of 5 tries.
 
 **Why this target:**
-<!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
-     about this path? -->
+The 5-of-5 target is reasonable because the agent only needs to check whether the search result is empty. This is a simple condition controlled by the code and does not depend on an AI-generated response. Therefore, the agent should stop correctly every time no matching item is found.
 
 ---
 
-## 3. Something about state
+## 3. The agent passes the correct selected item between tools
 
-<!-- YOU WRITE THIS ONE.
-
-     How would you know that the item your search found is the same item the
-     next tool received? Name something countable or observable.
-
-     This is the criterion people find hardest, because state failure doesn't
-     look like state failure — it looks like a tool problem. Something that
-     compares session["selected_item"] against what actually reached
-     suggest_outfit is the shape you're after. -->
-
-
+In 5 out of 5 tests, the listing ID stored in `session["selected_item"]` must match the listing ID received by `suggest_outfit()`.
 
 **Why this target:**
 
+The 5-of-5 target is necessary because the agent must recommend an outfit using the same item selected during the search. Passing a different item would produce an incorrect recommendation. Since session state is controlled by the program, the IDs should match every time.
 
 
 ---
 
-## 4. Something about the fit card
+## 4. The fit card mentions the correct item and price
 
-<!-- YOU WRITE THIS ONE.
-
-     The fit card calls a model, so the same input can produce different words
-     each time. That's not a bug — it's the nature of the tool. So what would
-     make it acceptable?
-
-     Think about what you'd actually be unhappy to see. A caption that never
-     mentions the price? Two different items producing the same opening
-     sentence? A card longer than a caption anyone would post? Any of those can
-     be turned into a number. -->
-
-
+In 5 out of 5 tests, the generated fit card must mention the selected clothing item and its correct price.
 
 **Why this target:**
+
+The 5-of-5 target is important because customers need accurate information about the clothing they want to purchase. Although AI-generated captions may vary in wording, the selected item and its price should remain correct in every caption.
 
 
 
 ---
 
-## 5. Your choice
+## 5. Search results respect the user's maximum price
 
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. Speed, the empty
-     wardrobe path, what happens when the model can't be reached, whether the
-     search respects a price ceiling — anything, as long as it names a number
-     or an observable outcome. -->
-
-
+In 5 out of 5 tests, every clothing item returned by `search_listings()` must have a price less than or equal to the user's specified maximum price.
 
 **Why this target:**
+
+The 5-of-5 target is reasonable because price filtering uses a simple numerical comparison. Customers should not receive recommendations that exceed their budgets. Since the code controls this condition, it should work correctly in every test.
 
 
 
