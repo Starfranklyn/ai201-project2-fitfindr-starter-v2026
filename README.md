@@ -335,21 +335,10 @@ The problem is in the search tool's matching logic, not the agent's branching or
 
 ## Loop Trace
 
-<!-- One full run, printed step by step, with the MCP call visible in it.
-
-     `python app.py ask '...' --trace` once you've added the trace.step()
-     calls in Milestone 2.
-
-     Worth pasting BOTH the happy path and the empty-search path. The empty
-     one should be visibly shorter, because it stops. If your two traces are
-     the same length, your branch isn't working — and this is the fastest way
-     anyone will ever find that out. -->
 
 **Happy path**
 
 ```
-
-Replace the empty code block with this actual trace from your run:
 
 
 [1] search_listings (via MCP)
@@ -368,13 +357,53 @@ Replace the empty code block with this actual trace from your run:
 
 ```
 
-[1] search_listings
+[1] search_listings (via MCP)
       in:  dict with keys: description, size, max_price
       out: [] (empty)
 [2] branch: no results
       →    Search returned no matches. Stop before suggest_outfit and create_fit_card.
 
 ```
+
+**Empty wardrobe failure test**
+
+Command:
+`python app.py ask 'denim jacket under $50' --empty-wardrobe --trace`
+
+Result:
+- `search_listings (via MCP)` returned one denim jacket priced at $42.
+- `suggest_outfit` generated two outfit recommendations despite the empty wardrobe.
+- The agent suggested clothing items the user could purchase to complete the outfits.
+- `create_fit_card` successfully generated a fit card.
+- The workflow completed with two model calls.
+
+Verdict: PASS. The agent handled an empty wardrobe without crashing or returning an empty response.
+
+
+**Model unavailable failure test**
+
+Command:
+`python app.py ask 'vintage graphic tee under $27' --trace`
+
+Test setup:
+Temporarily modified one character of GEMINI_API_KEY in the local .env file to simulate an invalid API key.
+
+Actual output:
+
+```text
+[1] search_listings (via MCP)
+      in:  dict with keys: description, size, max_price
+      out: 5 items: Graphic Tee — 2003 Tour Bootleg Style, Vintage Band Tee — Faded Grey, Vintage Graphic Hoodie — Faded Black … +2 more
+
+1 model calls this session
+
+ModelUnavailable: The model rejected your API key. Check GEMINI_API_KEY in your .env file, or create a fresh key at aistudio.google.com.
+```
+
+Verdict: PASS. The agent identified the unavailable model, displayed an actionable error message, and did not expose a Python traceback.
+
+The original API key was restored after testing.
+
 
 **On the MCP move:** 
 
