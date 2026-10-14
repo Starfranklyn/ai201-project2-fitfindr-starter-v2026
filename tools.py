@@ -119,8 +119,14 @@ def search_listings(
             elif re.search(pattern, searchable_text):
                 score += 1
 
-        if score > 0:
-            scored_items.append((score, item))
+        if score > 0 and (
+            len(keywords) == 1
+            or sum(
+                bool(re.search(r"\b" + re.escape(word) + r"\b", searchable_text))
+                for word in keywords
+            ) >= 2
+        ):
+          scored_items.append((score, item))
 
     scored_items.sort(key=lambda result: result[0], reverse=True)
 

@@ -17,6 +17,7 @@ import config
 import trace
 from tools import search_listings, suggest_outfit, create_fit_card
 from generate import ModelUnavailable
+from trace import start_trace, step, get_trace
 
 
 # ── session state ─────────────────────────────────────────────────────────────
@@ -105,6 +106,8 @@ def run_agent(query: str, wardrobe: dict) -> dict:
       • A handler for ModelUnavailable, so a bad key produces a message rather
         than a stack trace. The import is already at the top of this file.
     """
+
+    start_trace()
     session = new_session(query, wardrobe)
 
     iteration = 0
@@ -157,6 +160,16 @@ def run_agent(query: str, wardrobe: dict) -> dict:
             max_price=max_price
         )
 
+        step(
+            "search_listings (via MCP)",
+            inputs={
+                "description": description,
+                "size": size,
+                "max_price": max_price
+            },
+            returned=results
+        )
+
         session["search_results"] = results
 
         if not results:
@@ -165,16 +178,41 @@ def run_agent(query: str, wardrobe: dict) -> dict:
                 "Try increasing your budget, choosing another size, "
                 "or using a different clothing description."
             )
+            if not results:
+                session["error"] = "No matching clothing items were found. Try increasing your budget, choosing another size, or using a different clothing description."
+
+                step(
+                    "branch: no results",
+                    note="Search returned no matches. Stop before suggest_outfit and create_fit_card."
+                )
+
+                return session
             return session
         selected_item = results[0]
 
         session["selected_item"] = selected_item
 
         outfit = suggest_outfit(selected_item, wardrobe)
+        step(
+            "suggest_outfit",
+            inputs={
+                "selected_item": selected_item,
+                "wardrobe": wardrobe
+            },
+            returned=outfit
+        )
 
         session["outfit_suggestion"] = outfit
 
         fit_card = create_fit_card(outfit, selected_item)
+        step(
+            "create_fit_card",
+            inputs={
+                "outfit": outfit,
+                "selected_item": selected_item
+            },
+            returned=fit_card
+        )
 
         session["fit_card"] = fit_card
 
