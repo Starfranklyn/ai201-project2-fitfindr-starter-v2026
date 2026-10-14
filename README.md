@@ -59,25 +59,24 @@
 
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Searches thrift clothing listings and filters items based on the user's description, preferred size, and maximum price.
+- **Inputs:** `description` (str), `size` (str), and `max_price` (float).
+- **Returns:** A list of matching clothing records. Each record contains an item ID, title, description, category, style tags, size, condition, price, colors, brand, and selling platform.
+- **When it has nothing:** Returns an empty list (`[]`). The agent stops the outfit recommendation process and asks the user to adjust their search criteria.
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Generates outfit recommendations by combining a selected thrift listing with compatible clothing items from the user's existing wardrobe.
+- **Inputs:** `new_item` (dict), containing the selected clothing listing, and `wardrobe` (list of dicts), containing the user's existing clothing items.
+- **Returns:** An outfit recommendation containing the selected thrift item, suggested wardrobe pieces, and a brief explanation of how the pieces work together.
+- **When it has nothing:** If the wardrobe is empty, provides general styling suggestions for the selected item without referencing clothing the user does not own.
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
-
+- **What it does:** Generates a short, engaging fashion caption that describes the recommended outfit and highlights the selected thrift item.
+- **Inputs:** `outfit` (dict), containing the outfit recommendation, and `new_item` (dict), containing the selected thrift listing.
+- **Returns:** A fit card containing a fashion caption that identifies the selected item and describes the overall outfit style.
+- **When it has nothing:** If the outfit information is missing or invalid, returns a clear error message instead of generating an inaccurate caption.
 ---
 
 ## Planning Loop
